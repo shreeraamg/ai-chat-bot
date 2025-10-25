@@ -5,11 +5,14 @@ class ConversationRepository {
   private static MAX_HISTORY_LENGTH = 10
   private conversations = new Map<string, ChatHistory[]>()
 
-  getConversationHistory(conversationId: string): ChatHistory[] {
+  getConversationHistory = (conversationId: string): ChatHistory[] => {
     return this.conversations.get(conversationId) ?? []
   }
 
-  addMessageToConversation(conversationId: string, message: ChatHistory): void {
+  addMessageToConversation = (
+    conversationId: string,
+    message: ChatHistory
+  ): void => {
     let history = this.conversations.get(conversationId) ?? []
 
     if (this.conversations.size >= ConversationRepository.MAX_HISTORY_LENGTH) {
@@ -21,4 +24,4 @@ class ConversationRepository {
   }
 }
 
-export default ConversationRepository
+export default new ConversationRepository()

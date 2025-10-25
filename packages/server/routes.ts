@@ -1,9 +1,8 @@
 import type { Request, Response } from 'express'
 import { Router } from 'express'
-import ChatController from './controller/ChatController'
+import chatController from './controller/ChatController'
 
 const router = Router()
-const chatController = new ChatController()
 
 router.get('/', (req: Request, res: Response) => {
   res.send('Hello World')

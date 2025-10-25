@@ -1,24 +1,24 @@
 import { GoogleGenAI } from '@google/genai'
-import ConversationRepository from '../repository/ConversationRepository'
+import conversationRepository from '../repository/ConversationRepository'
 import type { ChatHistory, ChatResponse } from '../types'
 
 class ChatService {
-  private conversationRepository = new ConversationRepository()
   private ai = new GoogleGenAI({ apiKey: process.env.GEMINI_API_KEY })
 
-  async sendMessage(
+  sendMessage = async (
     conversationId: string,
     prompt: string
-  ): Promise<ChatResponse> {
+  ): Promise<ChatResponse> => {
+    console.log('Req came to service')
     const conversationHistory: ChatHistory[] =
-      this.conversationRepository.getConversationHistory(conversationId)
+      conversationRepository.getConversationHistory(conversationId)
 
     const chat = this.ai.chats.create({
       model: 'gemini-2.5-flash-lite',
       history: conversationHistory,
       config: {
         temperature: 0.2,
-        maxOutputTokens: 256
+        maxOutputTokens: 128
       }
     })
 
@@ -31,11 +31,11 @@ class ChatService {
       throw new Error('Failed to generate response')
     }
 
-    this.conversationRepository.addMessageToConversation(conversationId, {
+    conversationRepository.addMessageToConversation(conversationId, {
       role: 'user',
       parts: [{ text: prompt }]
     })
-    this.conversationRepository.addMessageToConversation(conversationId, {
+    conversationRepository.addMessageToConversation(conversationId, {
       role: 'model',
       parts: [{ text: responseMsg }]
     })
@@ -45,4 +45,4 @@ class ChatService {
   }
 }
 
-export default ChatService
+export default new ChatService()

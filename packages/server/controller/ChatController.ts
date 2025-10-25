@@ -1,10 +1,8 @@
 import type { Request, Response } from 'express'
-import ChatService from '../service/ChatService'
+import chatService from '../service/ChatService'
 import z from 'zod'
 
 class ChatController {
-  private chatService = new ChatService()
-
   private chatSchema = z.object({
     prompt: z
       .string()
@@ -14,7 +12,8 @@ class ChatController {
     conversationId: z.uuid()
   })
 
-  async sendMessage(req: Request, res: Response) {
+  sendMessage = async (req: Request, res: Response) => {
+    console.log('Req came to controller')
     const reqBodyValidation = this.chatSchema.safeParse(req.body)
     if (!reqBodyValidation.success) {
       return res.status(400).json(reqBodyValidation.error.flatten().fieldErrors)
@@ -22,10 +21,8 @@ class ChatController {
 
     try {
       const { prompt, conversationId } = req.body
-      const { message } = await this.chatService.sendMessage(
-        conversationId,
-        prompt
-      )
+      console.log(prompt)
+      const { message } = await chatService.sendMessage(conversationId, prompt)
 
       res.json({ message })
     } catch (e) {
@@ -34,4 +31,4 @@ class ChatController {
   }
 }
 
-export default ChatController
+export default new ChatController()
