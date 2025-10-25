@@ -18,7 +18,7 @@ class ChatService {
       history: conversationHistory,
       config: {
         temperature: 0.2,
-        maxOutputTokens: 128
+        maxOutputTokens: 256
       }
     })
 
