@@ -25,17 +25,17 @@ const ChatBot = () => {
 
   const onSubmit = async ({ prompt }: ChatFormData) => {
     try {
+      popAudio.play()
       setMessages((prev) => [...prev, { role: 'user', content: prompt }])
       setBotTyping(true)
       setError('')
-      popAudio.play()
 
       const { data } = await axios.post<ChatResponse>('/api/chat', {
         prompt,
         conversationId: conversationId.current
       })
-      setMessages((prev) => [...prev, { role: 'model', content: data.message }])
       notificationAudio.play()
+      setMessages((prev) => [...prev, { role: 'model', content: data.message }])
     } catch (error) {
       console.error(error)
       setError('Something went wrong, try again!')
