@@ -1,9 +1,23 @@
+import fs from 'fs'
+import path from 'path'
 import { GoogleGenAI } from '@google/genai'
 import conversationRepository from '../repository/ConversationRepository'
 import type { ChatHistory, ChatResponse } from '../types'
+import template from '../prompt/chatbot.txt'
 
 class ChatService {
-  private ai = new GoogleGenAI({ apiKey: process.env.GEMINI_API_KEY })
+  private ai: GoogleGenAI
+  private instructions: string
+
+  constructor() {
+    this.ai = new GoogleGenAI({ apiKey: process.env.GEMINI_API_KEY })
+
+    const parkInfo = fs.readFileSync(
+      path.join(__dirname, '..', 'prompt', 'WonderWorld.md'),
+      'utf-8'
+    )
+    this.instructions = template.replace('{{parkInfo}}', parkInfo)
+  }
 
   sendMessage = async (
     conversationId: string,
@@ -14,11 +28,12 @@ class ChatService {
       conversationRepository.getConversationHistory(conversationId)
 
     const chat = this.ai.chats.create({
-      model: 'gemini-2.5-flash-lite',
+      model: 'gemini-2.0-flash-lite',
       history: conversationHistory,
       config: {
         temperature: 0.2,
-        maxOutputTokens: 256
+        maxOutputTokens: 256,
+        systemInstruction: this.instructions
       }
     })
 
